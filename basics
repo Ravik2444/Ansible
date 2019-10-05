@@ -1,0 +1,84 @@
+Introduction
+
+Ansible is a configuration management and orchestration tool. It works as an IT automation engine.
+Ansible can be run directly from the command line without setting up any configuration files. 
+You only need to install Ansible on the control server or node. 
+It communicates and performs the required tasks using SSH. No other installation is required. 
+This is different from other orchestration tools like Chef and Puppet where you have to install software both on the control and client nodes.
+Ansible uses configuration files called playbooks for a series of tasks. The playbooks are written in YAML syntax.
+Due to the ease of use, Ansible is rising in popularity as an IT automation tool.
+
+Prerequisites
+
+1. Installation (Ubuntu)
+$ sudo apt-get update
+$ sudo apt-get install software-properties-common
+$ sudo apt-add-repository ppa:ansible/ansible
+$ sudo apt-get update
+$ sudo apt-get install ansible
+
+After installation we can check using the following command
+
+$ ansible --version
+ansible 2.0.0.2
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = Default w/o overrides
+
+2. python 2.6 or above must be installed
+$ python --version
+    Python 2.7.12
+    
+3. Configure ssh
+To access the nodes we must generate ssh key on control and copy it to other machines(nodes) under authorized_keys.
+
+
+Creating Inventory
+In Ansible, the inventory represents the machines that Ansible will manage. The list of machines in the inventory can be found out through the following command:
+$ ansible --list-hosts all
+
+/etc/ansible/hosts is the default path for hosts after ansible installation. We can create file based on our choice and pass it through -i flag.
+$ ansible -i new_inventory.txt --list-hosts all
+
+We can modify ansible.cfg file if we don't want to point to inventory every time.
+
+[defaults]
+inventory      = /etc/ansible/new_inventory.txt
+OR
+inventory = ./new_inventory.txt
+
+Declaration of nodes in inventory
+We can declare the nodes sequentially or we can group it under different categories.
+Nodes under different group can be listed by passing group name as below
+$ ansible --list-hosts webserver
+ hosts (2):
+    app01
+    app02
+    
+We can ping all the nodes using inventory
+$ ansible all -m ping
+172.31.12.219 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+13.232.177.65 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+172.31.9.228 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+Success means the control machine is able to run the ping command on all the machines in the inventory.
+
+ls command can be run using below command
+$ ansible all -m command -a 'ls'
+172.31.12.219 | SUCCESS | rc=0 >>
+snap
+
+172.31.9.228 | SUCCESS | rc=0 >>
+snap
+
+13.232.177.65 | SUCCESS | rc=0 >>
+snap
+
