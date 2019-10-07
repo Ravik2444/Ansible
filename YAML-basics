@@ -1,0 +1,8 @@
+For Ansible, nearly every YAML file starts with a list. Each item in the list is a list of key/value pairs, commonly called a “hash” or a “dictionary”. 
+All members of a list are lines beginning at the same indentation level starting with a "- " (a dash and a space).
+A dictionary is represented in a simple key: value form (the colon must be followed by a space).
+# An employee record
+martin:
+    name: Martin D'vloper
+    job: Developer
+    skill: Elite
