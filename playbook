@@ -1,0 +1,90 @@
+Playbook are written in YAML syntax.
+Playbook is composed of plays(one or more). 
+The goal of a play is to map a group of hosts to some well defined roles, represented by things ansible calls tasks. 
+At a basic level, a task is nothing more than a call to an ansible module.
+
+Basics of playbook:
+hosts: It is a list of one or more groups or host patterns, separated by colons.
+remote_user: It is just the name of user account.
+become: It is used to become sudo in the play(priviledge escalation).
+
+---
+- hosts: webservers
+  remote_user: yourname
+  tasks:
+    - service:
+        name: nginx
+        state: started
+      become: yes
+      become_method: sudo
+      
+become_user: If we want to switch to different user after login to the machine. 
+---
+- hosts: webservers
+  remote_user: yourname
+  become: yes
+  become_user: postgres
+  
+ ** we can use 'su' as become_user **
+ 
+ If you need to specify a password for sudo, run ansible-playbook with --ask-become-pass or -K.
+ 
+ We can control the way in which hosts are run
+ - hosts: all
+  order: sorted
+  gather_facts: False
+  tasks:
+    - debug:
+        var: inventory_hostname
+        
+ Options available::
+ 
+-- Sorted                 : Hosts are alphabetically sorted by name
+-- reverse_sorted         : Reverse order of alphabetically sorted hosts.
+-- inventory              : The default. The order is ‘as provided’ by the inventory
+-- reverse_inventory      : reverses the order ‘as provided’ by the inventory
+-- shuffle                : Hosts are randomly ordered each run
+
+Every task should have a name, which is included in the output from running the playbook. 
+This is human readable output, and so it is useful to provide good descriptions of each task step.
+
+The command and shell module care about return codes, so if you have a command whose successful exit code is not zero, 
+we have to ignore the error.
+tasks:
+  - name: run this command and ignore the result
+    shell: /usr/bin/somecommand
+    ignore_errors: True
+    
+Handlers:
+These ‘notify’ actions are triggered at the end of each block of tasks in a play, and will only be triggered once even if notified by multiple different tasks.
+The things listed in the notify section of a task are called handlers.
+
+- name: template configuration file
+  template:
+    src: template.j2
+    dest: /etc/foo.conf
+  notify:
+     - restart memcached
+     - restart apache
+  handlers:
+    - name: restart memcached
+      service:
+        name: memcached
+        state: restarted
+    - name: restart apache
+      service:
+        name: apache
+        state: restarted
+        
+        
+        
+  Ansible-pull:
+  
+  The ansible-pull is a small script that will checkout a repo of configuration instructions from git, 
+  and then run ansible-playbook against that content.
+To check the syntax of a playbook, use ansible-playbook with the --syntax-check flag. This will run the playbook file through the parser to ensure its included files, roles, etc. have no syntax problems.
+If you ever want to see detailed output from successful modules as well as unsuccessful ones, use the --verbose flag.
+
+List host in ansible playbook
+# ansible-playbook playbook.yml --list-hosts
+
