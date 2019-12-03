@@ -88,3 +88,24 @@ If you ever want to see detailed output from successful modules as well as unsuc
 List host in ansible playbook
 # ansible-playbook playbook.yml --list-hosts
 
+Reusable playbook::
+Large size playbook can be broken to smaller and re-usable playbook using
+- include
+- import and 
+- roles
+If you use any include* Task (include_tasks, include_role, etc.), it will be dynamic. If you use any import* Task (import_playbook, import_tasks, etc.), it will be static.
+
+Differences Between Dynamic and Static
+The two modes of operation are pretty simple:
+
+- Dynamic includes are processed during runtime at the point in which that task is encountered.
+- Ansible pre-processes all static imports during Playbook parsing time.
+
+When it comes to Ansible task options like tags and conditional statements (when:):
+
+- For dynamic includes, the task options will only apply to the dynamic task as it is evaluated, and will not be copied to child tasks.
+- For static imports, the parent task options will be copied to all child tasks contained within the import.
+
+
+
+
