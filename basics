@@ -31,6 +31,8 @@ $ python --version
 3. Configure ssh
 To access the nodes we must generate ssh key on control and copy it to other machines(nodes) under authorized_keys.
 
+Ansible command syntax:
+ansible <server/hosts> -m <module_name> -a arguments
 
 Creating Inventory
 In Ansible, the inventory represents the machines that Ansible will manage. The list of machines in the inventory can be found out through the following command:
